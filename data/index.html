@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <link rel="icon" href="iconWeldy.ico" />
+
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="js/iron.js"></script>
+    <script src="js/papaparse.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="style/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet"> 
+    
+  </head>
+  <a class="btn btn-navbar" id="btnMenu">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </a>
+  <body onload="javascript:init()"> 
+
+    <div class="main-container">
+      <div class="wrap">
+          <div class="colorPicker"></div>
+            <label class="onOff">
+            <input id="onOFf" type="checkbox">
+              <div class="slider"></div>
+            </label>
+            <div class="sauvegarde">
+              <input type="button" id="sauv" value=Sauvegarder style="font-family: 'Karla', sans-serif;" onclick="saving()"/>
+
+              <input type="checkbox" id="menu-toggle" name="SaveMenu" onclick="chooseSave('save.csv')"/>
+              <label for="menu-toggle">
+                    <i id="open" class="material-icons">menu</i>
+                    <i id="close" class="material-icons">arrow_back</i>
+                </label>
+                <ul id="menu">
+                    <li><div id="carre1" onclick="setSaveColor(1)"></div></a></li>
+                    <li><div id="carre2" onclick="setSaveColor(2)"></div></a></li>
+                    <li><div id="carre3" onclick="setSaveColor(3)"></div></a></li>
+                    <li><div id="carre4" onclick="setSaveColor(4)"></div></a></li>
+                </ul>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="side-addons">
+      <div class="switch">
+        <h4>Smart light</h4>
+        <label class="onOff">
+        <input id="smartLightSwitch" type="checkbox" name="SmartLight">
+        <div class="slider"></div>
+      </label>
+    </div>
+
+      <div class="menu">
+
+        <input type="checkbox" class="menu-open" name="menu-open" id="menu-open"">
+        <label class="menu-open-button" for="menu-open">
+          <span class="points p-1"></span>
+          <span class="points p-2"></span>
+          <span class="points p-3"></span>
+        </label>
+       
+        <a class="menu-item item-1" id="sous-menu1" onclick="chooseColorRange(1)"></a>
+        <a class="menu-item item-2" id="sous-menu2" onclick="chooseColorRange(2)"></a>
+        
+      </div>
+    </div>
+  </body>
+  <script src="js/script.js"></script>
+</html>
