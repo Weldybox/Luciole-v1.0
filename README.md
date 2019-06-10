@@ -1,4 +1,4 @@
-# Luciole-v1.0 ??
+# Luciole-v1.0
 
 ⚠️ **Supprimez le dossier images/ pour éviter les bugs durant l'upload du programme.**
 
