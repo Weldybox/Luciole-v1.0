@@ -106,7 +106,7 @@ Le switch ON/OFF permet comme son nom l'indique d'allumer ou d'éteindre les LED
 Sauvegarde dans la mémoire SPIFFS de l'ESP jusqu'à 5 couleurs sélectionnées par l'utilisateur.
 
 Les couleurs sélectionnées et sauvegardées sont transférées à l'ESP avec un label spécial indiquant qu'il faut les stocker.
-l'ESP.
+
 > Arduino
 ```c
 if(payload[0] =='s'){
@@ -132,7 +132,7 @@ function displaySave(results){
   });
 }
 ```
-Une fonction surveille également le nombre d'enregistrements ne dépasse pas 5. Dans le cas contraire, l'ESP supprime la première valeur entrée et rajoute la 6e en 5e position.
+Une fonction surveille également que le nombre d'enregistrements ne dépasse pas 5. Dans le cas contraire, l'ESP supprime la première valeur entrée et rajoute la 6e en 5e position.
 
 > Arduino
 ```c
@@ -152,9 +152,9 @@ Une fonction surveille également le nombre d'enregistrements ne dépasse pas 5.
 
 ## Option smartLight
 
-L'option smart light permet d'adapter la lumière avec le levé et le coucher de soleil
+L'option smart light permet d'adapter la lumière avec le lever et le coucher de soleil
 
-L'application récupère tous les jours l'heure de levé et couchée de soleil grâce à l'API Openweathermap ainsi que l'heure format unix.
+L'application récupère tous les jours l'heure du lever et coucher de soleil grâce à l'API Openweathermap ainsi que l'heure format unix.
 
 > Arduino
 ```c
@@ -195,7 +195,7 @@ Si l'application détecte qu'on est à une heure du crépuscule alors elle va d�
 ```
 <p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/SelectionColorSmartLight.gif" alt="image roue couleur" width="650"></img></p>
 
-Pour éviter les conflits, le mode smart light n'est pas compatible avec le mode libre. Le site est aussi équipé de cookie qui permet de reprendre la session à l'endroit ou l'utilisateur la quitte.
+Pour éviter les conflits, le mode smart light n'est pas compatible avec le mode libre. Le site est aussi équipé de cookies qui permettent de reprendre la session à l'endroit ou l'utilisateur l'a quittée.
 
 <p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/gestionCompatibilitéSmartLight.gif" alt="image roue couleur" width="650"></img></p>
 
