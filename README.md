@@ -1,4 +1,4 @@
-# Luciole-v1.0 ??
+# Luciole-v1.0
 
 ⚠️ **Supprimez le dossier images/ pour éviter les bugs durant l'upload du programme.**
 
@@ -106,7 +106,7 @@ Le switch ON/OFF permet comme son nom l'indique d'allumer ou d'éteindre les LED
 Sauvegarde dans la mémoire SPIFFS de l'ESP jusqu'à 5 couleurs sélectionnées par l'utilisateur.
 
 Les couleurs sélectionnées et sauvegardées sont transférées à l'ESP avec un label spécial indiquant qu'il faut les stocker.
-l'ESP.
+
 > Arduino
 ```c
 if(payload[0] =='s'){
@@ -132,7 +132,7 @@ function displaySave(results){
   });
 }
 ```
-Une fonction surveille également le nombre d'enregistrements ne dépasse pas 5. Dans le cas contraire, l'ESP supprime la première valeur entrée et rajoute la 6e en 5e position.
+Une fonction surveille également que le nombre d'enregistrements ne dépasse pas 5. Dans le cas contraire, l'ESP supprime la première valeur entrée et rajoute la 6e en 5e position.
 
 > Arduino
 ```c
@@ -148,4 +148,55 @@ Une fonction surveille également le nombre d'enregistrements ne dépasse pas 5.
     suprSelect("n0","/save.csv",5,1);
   }
 ```
+<p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/savedColors.gif" alt="image roue couleur" width="450"></img></p>
 
+## Option smartLight
+
+L'option smart light permet d'adapter la lumière avec le lever et le coucher de soleil
+
+L'application récupère tous les jours l'heure du lever et coucher de soleil grâce à l'API Openweathermap ainsi que l'heure format unix.
+
+> Arduino
+```c
+dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
+dataSmartEcl[1] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunset")+utcOffsetInSeconds);
+dataSmartEcl[2] = (timeClient.getEpochTime());
+```
+
+Si l'application détecte qu'on est à une heure du crépuscule alors elle va dériver vers une couleur sélectionnée par l'utilisateur. Cette couleur est sélectionnée en JS et sauvegardée dans la mémoire spiffs de la même manière que la sauvegarde classique.
+
+> JavaScipt
+```c
+  //Fonction qui detecte quand on veut régler la plage de couleur de l'éclairage intelligent
+  Reglage.addEventListener('change', function () {
+    if(Reglage.checked){
+      if(SaveMenu.checked){
+        document.getElementById("menu-toggle").checked = false;
+      }
+      chooseSave("saveS.csv");
+      rangeDefine = true;
+    }else{
+      rangeDefine = false;
+      pickColor = 0;
+
+      var couleurs = ["sTR","sTG","sTB"];
+
+      for(var i=0;i<3;i++){
+        console.log(couleurs[i] + ((((((document.getElementById("sous-menu2").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
+
+        connection.send(couleurs[i] + ((((((document.getElementById("sous-menu1").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
+
+      }
+      for(var i=0;i<3;i++){
+      connection.send(couleurs[i] + ((((((document.getElementById("sous-menu2").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
+      }
+    }
+  });
+```
+<p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/SelectionColorSmartLight.gif" alt="image roue couleur" width="650"></img></p>
+
+Pour éviter les conflits, le mode smart light n'est pas compatible avec le mode libre. Le site est aussi équipé de cookies qui permettent de reprendre la session à l'endroit ou l'utilisateur l'a quittée.
+
+<p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/gestionCompatibilitéSmartLight.gif" alt="image roue couleur" width="650"></img></p>
+
+ 
