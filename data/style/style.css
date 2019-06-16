@@ -8,9 +8,9 @@ body {
   justify-content: center;
   align-items: center;
  flex-direction: column;
-  color: #fff;
+  color: #fff !important;
   text-align: center;
-  background-color: #171F30;
+  background-color: #171F30 !important;
   line-height: 150%;
 }
 

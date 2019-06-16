@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+    <title>
+      Javascript Alarm Clock Demo
+    </title>
+    <link href="style/alarme.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet"> 
+  </head>
+  <body>
+    <!-- [CURRENT TIME] -->
+    <div id="ctime">
+      <div class="square">
+        <p>Heures</p>
+        <div class="digits" id="chr">00</div>
+        <div class="text">HR</div>
+      </div>
+      <div class="square">
+        <p>Minutes</p>
+        <div class="digits" id="cmin">00</div>
+        <div class="text">MIN</div>
+      </div>
+      <div class="square">
+        <p>Secondes</p>
+        <div class="digits" id="csec">00</div>
+        <div class="text">SEC</div>
+      </div>
+    </div>
+
+    <!-- [SET ALARM] -->
+    <div id="tpick">
+      <h1 class="header">
+        ALARME
+      </h1>
+      <div id="tpick-h"></div>
+      <div id="tpick-m"></div>
+      <div id="tpick-s"></div>
+      <div>
+        <input type="button" value="Set" id="tset"/>
+        <input type="button" value="Reset" id="treset" disabled/>
+      </div>
+    </div>
+    <div class="container">
+      <label class="onOff">
+        <input id="wakeOn" type="checkbox" name="wakeUP">
+    <div class="slider"></div>
+    </label>
+    </div>
+    <a href="/">Home</a>
+  </body>
+  <script src="js/alarme.js"></script>
+</html>

@@ -13,10 +13,10 @@
 #include <WiFiManagerByWeldy.h>
 #include <DNSServer.h>
 #include <ArduinoJson.h>
-#include <NTPClient.h>
+#include "NTPClientByJulfi.h"
 #include <ESP8266HTTPClient.h>
 #include <WiFiUdp.h>
-
+#include <time.h>
 /*--------------------------------------------------------------------------------
 Variables qui peremttent de manipuler des constantes de temps
 --------------------------------------------------------------------------------*/
@@ -51,6 +51,9 @@ uint8_t go2 = 0;
 unsigned long previousLoopMillis = 0; //Variable qui permet d'actualiser la couleur des LEDs toute les X secondes en mode Smart Eclairage
 unsigned long previousLoopMillis1 = 0;
 
+bool wakeHour = false;
+int WakeTime;
+
 /*--------------------------------------------------------------------------------
 Définition des objets nécessaire dans la suite du programme.
 --------------------------------------------------------------------------------*/
@@ -61,6 +64,7 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org",utcOffsetInSeconds);  
 
 HTTPClient http;
+
 
 /*--------------------------------------------------------------------------------
 Fonction de programmation OTA
@@ -88,6 +92,7 @@ void confOTA() {
   });
   ArduinoOTA.begin();
 }
+
 
 String split(String data, char separator, int index)
 {
@@ -349,11 +354,57 @@ void addData(uint16_t couleur, uint8_t * couleurSave, String nomFichier, uint8_t
 }
 
 /*--------------------------------------------------------------------------------
+Permet de définir si le réveil est pour le jour même ou le jour suivant.
+--------------------------------------------------------------------------------*/
+int WakeUPday(int heureWake, int MinWake){
+  Serial.println(heureWake);
+  Serial.println(timeClient.getHours());
+  if(heureWake < timeClient.getHours()){
+    return timeClient.getRealDay()+1;
+  }else if(heureWake == timeClient.getHours() && MinWake < timeClient.getMinutes()){
+    return timeClient.getRealDay()+1;
+  }else{
+    return timeClient.getRealDay();
+  }
+}
+
+/*--------------------------------------------------------------------------------
 Fonction qui traite les requêtes websocket arrivant depuis le serveur web.
 --------------------------------------------------------------------------------*/
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
   if(type == WStype_TEXT){
     uint16_t couleur = (uint16_t) strtol((const char *) &payload[1], NULL, 10);
+    if(payload[0] == 'A'){
+      if(payload[1] == 'O'){
+        wakeHour = true;
+      }else if(payload[1] == 'F'){
+        wakeHour = false;
+      }else{
+        int heure = 0;
+        int minute = 0;
+
+        if(couleur < 1000){
+          String str = String(couleur, DEC);
+          heure = (str.substring(0,1)).toInt();
+          minute = (str.substring(1,3)).toInt();
+        }else{}
+
+        struct tm info;
+        char buffer[80];
+
+        info.tm_min = minute;
+        info.tm_hour = heure;
+        info.tm_year =timeClient.getYear() - 1900;
+        info.tm_mon = timeClient.getMonth();
+        info.tm_mday = WakeUPday(heure, minute);
+        info.tm_sec = 1;
+        info.tm_isdst = -1;
+
+        WakeTime = mktime(&info);
+
+        Serial.println(WakeTime);
+      }
+    }
     if(payload[0] == 'R'){
       analogWrite(REDPIN, couleur);
 
@@ -381,8 +432,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     }
     if(payload[0] == '#'){
       if(payload[1] == '1'){
+        if(wakeHour){
+          dataSmartEcl[0] = WakeTime;
+        }else{
+          dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
+        }
 
-        dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
+        Serial.println(dataSmartEcl[0]);
         dataSmartEcl[1] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunset")+utcOffsetInSeconds);
         dataSmartEcl[2] = (timeClient.getEpochTime());
 
@@ -444,12 +500,13 @@ void setup() {
   server.serveStatic("/save.csv", SPIFFS, "/save.csv");
   server.serveStatic("/saveS.csv", SPIFFS, "/saveS.csv");
   server.serveStatic("/iconWeldy.ico", SPIFFS, "/iconWeldy.ico");
+  server.serveStatic("/alarme.html", SPIFFS, "/alarme.html");
+
   
   timeClient.begin();
   server.begin();
   webSocket.begin();
   webSocket.onEvent(webSocketEvent); //Fonction de callback si l'on reçois un message du Webserveur
-
 }
 
         
@@ -463,7 +520,11 @@ void loop() {
     
     if(((timeClient.getFormattedTime()).substring(0,2)).toInt() < 1){
       if(((timeClient.getFormattedTime()).substring(3,6)).toInt() < 30){
-        dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
+        if(wakeHour){
+          dataSmartEcl[0] = WakeTime;
+        }else{
+          dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
+        }
         dataSmartEcl[1] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunset")+utcOffsetInSeconds);
       }
     }
