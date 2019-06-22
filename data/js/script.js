@@ -35,7 +35,15 @@ function init(){
     //checkSLCheckProcess();
   }
 
-  //console.log(getCookie("cursor"));
+  Papa.parse("saveA.csv", {
+    header: false,
+    download: true,
+    delimiter: ";",
+    dynamicTyping: true,
+    complete: function(results) {
+      document.getElementById("sous-menu3").style.background = "rgb(" + results.data[0][0] + ")";
+    }
+  });
 }
 
 
@@ -229,6 +237,20 @@ function checkSLUncheckProcess(){
   setInterval.println("off");
 }
 
+function saveAlarme(){
+  console.log("ok");
+  //connection.send("sA");
+  var couleurs = ["sAR","sAG","sAB"];
+
+  for(var i=0;i<3;i++){
+    console.log(couleurs[i] + ((((((document.getElementById("sous-menu3").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
+
+    connection.send(couleurs[i] + ((((((document.getElementById("sous-menu3").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
+
+  }
+  
+}
+
 //Fonction qui permet de gérer les interactions de l'utilisateur sur la page.
 document.addEventListener('DOMContentLoaded', function () {
   var SmartLight = document.querySelector('input[name=SmartLight]');
@@ -317,6 +339,9 @@ var colorPicker = new iro.ColorPicker(".colorPicker", {
     document.cookie = "cursor="+"rgb("+red+","+green+","+blue+")";
 
     if(rangeDefine && pickColor){
+      var backgroundcolor = "rgb("+red+","+green+","+blue+")";
+      document.getElementById("sous-menu"+pickColor).style.background = backgroundcolor;
+    }else if(pickColor == 3){
       var backgroundcolor = "rgb("+red+","+green+","+blue+")";
       document.getElementById("sous-menu"+pickColor).style.background = backgroundcolor;
     }

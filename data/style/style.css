@@ -395,6 +395,32 @@ a {
   -webkit-transform: translate3d(0, 7px, 0);
   transform: translate3d(0, 7px, 0);
 }
-i {
-  text-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+.containerAlarme{
+  margin-right: 50px;
+  display: flex;
+  align-content: center;
+  flex: row;
+}
+
+#sous-menu3{
+  width: 60px;
+  height: 40px;
+  border: 3px solid white;
+  background-color: grey;
+}
+.alarme{
+  padding: 10px;
+  background-color: #24913d;
+  font-family: 'Nunito', sans-serif;
+  border-radius:10px 10px;
+}
+
+#sauvAlarmeC{
+  width: 60px;
+  height: 40px;
+  margin-right:40px;
+  border:none;
+  border-radius:10px 10px;
+  color:white;
+  background-color:rgb(32, 129, 57);
 }

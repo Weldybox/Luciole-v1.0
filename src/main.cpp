@@ -49,10 +49,16 @@ uint8_t go1 = 0; //Variable qui se devient vrai lorsque l'on doit supprimer une 
 uint8_t go2 = 0;   
 
 unsigned long previousLoopMillis = 0; //Variable qui permet d'actualiser la couleur des LEDs toute les X secondes en mode Smart Eclairage
-unsigned long previousLoopMillis1 = 0;
+unsigned long previousAlarme = 0;
 
 bool wakeHour = false;
 int WakeTime;
+int refreshAlarme;
+int fromhigh;
+
+uint8_t AlarmeRed = 0;
+uint8_t AlarmeGreen = 0;
+uint8_t AlarmeBlue = 0;
 
 /*--------------------------------------------------------------------------------
 Définition des objets nécessaire dans la suite du programme.
@@ -93,7 +99,6 @@ void confOTA() {
   ArduinoOTA.begin();
 }
 
-
 String split(String data, char separator, int index)
 {
   int found = 0;
@@ -111,6 +116,42 @@ String split(String data, char separator, int index)
   return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
+
+void Alarme(){
+  if((timeClient.getEpochTime() < (WakeTime - 300)) && refreshAlarme != 60000){
+    refreshAlarme = 60000;
+    Serial.println(timeClient.getEpochTime());
+    Serial.println("<");
+    Serial.println(WakeTime);
+    Serial.println(refreshAlarme);
+    analogWrite(REDPIN, 0);
+    analogWrite(GREENPIN, 0);
+    analogWrite(BLUEPIN, 0);
+
+  }else if(timeClient.getEpochTime() >= WakeTime){
+    wakeHour = false;
+  }else if(timeClient.getEpochTime() > (WakeTime - 300)){
+    int time = timeClient.getEpochTime();
+    if(refreshAlarme != 1000){
+      refreshAlarme = 1000;
+      Serial.println("refresh toute les secondes");
+      fromhigh = WakeTime - time;
+    }
+    
+    int red = map((WakeTime - time), fromhigh, 0, 0, AlarmeRed);
+    int green = map((WakeTime - time), fromhigh, 0, 0, AlarmeGreen);
+    int blue = map((WakeTime - time), fromhigh, 0, 0, AlarmeBlue);
+
+    Serial.println(red);
+    Serial.println(green);
+    Serial.println(blue);
+
+    analogWrite(REDPIN, red);
+    analogWrite(GREENPIN, green);
+    analogWrite(BLUEPIN, blue);
+
+  }
+}
 
 /*--------------------------------------------------------------------------------
 Fonction qui retourne si l'on est plus proche du levé ou coucher de soleuil.
@@ -137,7 +178,6 @@ uint16_t checkTime(int dataSmartEcl[], uint8_t longueur){
 
   //On vérifie que l'heure du jour est au alentour de l'heure de sunset ou sunrise
   int ecart = dataSmartEcl[2] - dataSmartEcl[index]; //L'écart c'est la différence entre l'heur actuelle et l'heure de coucher/levé de soleil
-  Serial.println(ecart);
   if(ecart < 0 && ecart > -3600){ //Si c'ette écart se trouve dans la tranche de transition des LEDs
 
     int result = map(ecart, -3600, 0, 0, 3600); //On retrourne un résultat positif
@@ -152,18 +192,18 @@ uint16_t checkTime(int dataSmartEcl[], uint8_t longueur){
 Fonction qui retourne les valeur de rouge vert et bleu en fonction de l'écart
 entre le jour et la nuit
 --------------------------------------------------------------------------------*/
-void displayColors(int dataSmartEcl[],uint8_t longueur){
+void displayColors(int dataSmartEcl[],uint8_t longueur, int cooldown, String mode){
   /*--------------------------------------------------------------------------------
   Selon l'a position du soleil nous cherchons à aller vers le blanc ou le orange/rouge
   --------------------------------------------------------------------------------*/
   Serial.println(sunPosition(dataSmartEcl, 3));
-  if(sunPosition(dataSmartEcl, 3) == "soir"){ //S'il on se trouve dans la tranche soir
+  if((sunPosition(dataSmartEcl, 3) == "soir") && (mode = "SmartLight")){ //S'il on se trouve dans la tranche soir
     Serial.println("soir");
 
     //On map les valeurs de vert et bleu de 255 (couleur blanche) au valeurs attendue en sortie.
-    uint8_t rouge = map(checkTime(dataSmartEcl, 3),0,3600,(split(couleurComp[1],',',0)).toInt(),(split(couleurComp[0],',',0)).toInt());
-    uint8_t vert = map(checkTime(dataSmartEcl, 3),0,3600,(split(couleurComp[1],',',1)).toInt(),(split(couleurComp[0],',',1)).toInt());
-    uint8_t bleu = map(checkTime(dataSmartEcl, 3),0,3600,(split(couleurComp[1],',',2)).toInt(),(split(couleurComp[0],',',2)).toInt());
+    uint8_t rouge = map(checkTime(dataSmartEcl, 3),0,cooldown,(split(couleurComp[1],',',0)).toInt(),(split(couleurComp[0],',',0)).toInt());
+    uint8_t vert = map(checkTime(dataSmartEcl, 3),0,cooldown,(split(couleurComp[1],',',1)).toInt(),(split(couleurComp[0],',',1)).toInt());
+    uint8_t bleu = map(checkTime(dataSmartEcl, 3),0,cooldown,(split(couleurComp[1],',',2)).toInt(),(split(couleurComp[0],',',2)).toInt());
     //Puis on set le bandeau de LED tel quel.
     analogWrite(REDPIN, rouge);
     analogWrite(GREENPIN, vert);
@@ -178,9 +218,9 @@ void displayColors(int dataSmartEcl[],uint8_t longueur){
     Serial.println("journee"); //Dans le cas contraire on est dans la seconde partie de tranche
 
     //On map les valeus de vert et bleu allant des valeurs de couleurs chaudes à 255 (couleurs blanche)
-    uint8_t rouge = map(checkTime(dataSmartEcl, 3),0,3600,(split(couleurComp[0],',',0)).toInt(),(split(couleurComp[1],',',0)).toInt());
-    uint8_t vert = map(checkTime(dataSmartEcl, 3),0,3600,(split(couleurComp[0],',',1)).toInt(),(split(couleurComp[1],',',1)).toInt());
-    uint8_t bleu = map(checkTime(dataSmartEcl, 3),0,3600,(split(couleurComp[0],',',2)).toInt(),(split(couleurComp[1],',',2)).toInt());
+    uint8_t rouge = map(checkTime(dataSmartEcl, 3),0,cooldown,(split(couleurComp[0],',',0)).toInt(),(split(couleurComp[1],',',0)).toInt());
+    uint8_t vert = map(checkTime(dataSmartEcl, 3),0,cooldown,(split(couleurComp[0],',',1)).toInt(),(split(couleurComp[1],',',1)).toInt());
+    uint8_t bleu = map(checkTime(dataSmartEcl, 3),0,cooldown,(split(couleurComp[0],',',2)).toInt(),(split(couleurComp[1],',',2)).toInt());
 
     //Puis on set le bandeau de LED te quel.
     analogWrite(REDPIN, rouge);
@@ -251,6 +291,7 @@ void suprdata(String data[55], int tabIndex[5], String nomFichier, int limiteSav
   ftemp.close();
 }
 
+
 /*--------------------------------------------------------------------------------
 Test s'il faut suprrimer la première couleur entrée.
 --------------------------------------------------------------------------------*/
@@ -300,7 +341,7 @@ void suprSelect(String nom, String nomFichier, uint8_t nombre, uint8_t Nsuppr){
 
     file.close(); 
     suprdata(save, index, "/save.csv",5,1);
-  }else{
+  }else if(nom == "n1"){
     go2 -=2;
     //Serial.println(go2);
 
@@ -314,19 +355,29 @@ Fonction qui traite les requêtes websocket arrivant depuis le serveur web.
 --------------------------------------------------------------------------------*/
 void addData(uint16_t couleur, uint8_t * couleurSave, String nomFichier, uint8_t index){
   uint16_t save = (uint16_t) strtol((const char *) &couleurSave[index], NULL, 10);
+  //Si on souhaite sauvegarder les donnés pour l'alarme alors on écrase la donnée précédente.
+  //Sinon on l'ajoute simplement.
   File f = SPIFFS.open(nomFichier, "a+");
+  if (nomFichier == "/saveA.csv" && couleur == 'R'){
+    File f = SPIFFS.open(nomFichier, "w");
+  }
+
   if (!f) {
     Serial.println("erreur ouverture fichier!");
   }else{
     if(couleur == 'R'){
         char buffred[16];
         sprintf(buffred,"%d,",save);
-        Serial.println(buffred);
+        //Serial.println(buffred);
         f.print(buffred);
+        (nomFichier == "/saveA.csv")? AlarmeRed = save: 0;
+        Serial.println(AlarmeRed);
+
     }else if(couleur == 'G'){
         char buffgreen[16];
         sprintf(buffgreen,"%d,",save);
         Serial.println(buffgreen);
+        (nomFichier == "/saveA.csv")? AlarmeGreen = save: 0;
         f.print(buffgreen);
         
     }else if(couleur == 'B'){
@@ -334,10 +385,11 @@ void addData(uint16_t couleur, uint8_t * couleurSave, String nomFichier, uint8_t
         sprintf(buffblue,"%d;",save);
         Serial.println(buffblue);
         f.print(buffblue);
+        (nomFichier == "/saveA.csv")? AlarmeBlue = save: 0;
 
         //On regarde si le nombre de couleur sauvegardé n'exède pas 5
        //Serial.println(index);
-        if(index == 3 && checkSpace(1,2,"go2")){
+        if(nomFichier != "/saveA.csv" && index == 3 && checkSpace(1,2,"go2")){
           //Serial.println("true");
           Serial.println("Suppression save1");
           suprSelect("n1","/saveS.csv",5,12);
@@ -365,6 +417,7 @@ int WakeUPday(int heureWake, int MinWake){
     return timeClient.getRealDay()+1;
   }else{
     return timeClient.getRealDay();
+    Serial.println(timeClient.getRealDay());
   }
 }
 
@@ -387,7 +440,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
           String str = String(couleur, DEC);
           heure = (str.substring(0,1)).toInt();
           minute = (str.substring(1,3)).toInt();
-        }else{}
+        }else{
+          String str = String(couleur, DEC);
+          Serial.println((str.substring(0,1)).toInt());
+          Serial.println((str.substring(1,3)).toInt());
+          heure = (str.substring(0,2)).toInt();
+          minute = (str.substring(2,4)).toInt();
+        }
 
         struct tm info;
         char buffer[80];
@@ -395,14 +454,14 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         info.tm_min = minute;
         info.tm_hour = heure;
         info.tm_year =timeClient.getYear() - 1900;
-        info.tm_mon = timeClient.getMonth();
+        info.tm_mon = timeClient.getMonth()-1;
         info.tm_mday = WakeUPday(heure, minute);
         info.tm_sec = 1;
         info.tm_isdst = -1;
 
         WakeTime = mktime(&info);
 
-        Serial.println(WakeTime);
+        Serial.println(mktime(&info));
       }
     }
     if(payload[0] == 'R'){
@@ -425,20 +484,18 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     }
     if(payload[0] =='s'){
       if(payload[1] == 'T'){
-        addData(payload[2],payload,"/saveS.csv",3);
+        addData(payload[2],payload,"/ saveS.csv",3);
+      }else if(payload[1] == 'A'){
+        Serial.println("ok");
+        
+        addData(payload[2],payload,"/saveA.csv",3);
       }else{
         addData(payload[1],payload,"/save.csv",2);
       }
     }
     if(payload[0] == '#'){
       if(payload[1] == '1'){
-        if(wakeHour){
-          dataSmartEcl[0] = WakeTime;
-        }else{
-          dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
-        }
-
-        Serial.println(dataSmartEcl[0]);
+        dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
         dataSmartEcl[1] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunset")+utcOffsetInSeconds);
         dataSmartEcl[2] = (timeClient.getEpochTime());
 
@@ -446,12 +503,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
           refresh = 10*MMINUTE;
           mode="Active";
           Serial.println("mode = active");
-          displayColors(dataSmartEcl,3);
+          displayColors(dataSmartEcl,3,3600,"SmartLight");
         }else if(checkTime(dataSmartEcl, 3)>=0){
           refresh = 5*MMINUTE;
           mode="Process";
           Serial.println("mode = process");
-          displayColors(dataSmartEcl,3);
+          displayColors(dataSmartEcl,3,3600,"SmartLight");
         }
       
       }else if(payload[1] == '2'){
@@ -498,6 +555,7 @@ void setup() {
   server.serveStatic("/js", SPIFFS, "/js");
   server.serveStatic("/style", SPIFFS, "/style");
   server.serveStatic("/save.csv", SPIFFS, "/save.csv");
+  server.serveStatic("/saveA.csv", SPIFFS, "/saveA.csv");
   server.serveStatic("/saveS.csv", SPIFFS, "/saveS.csv");
   server.serveStatic("/iconWeldy.ico", SPIFFS, "/iconWeldy.ico");
   server.serveStatic("/alarme.html", SPIFFS, "/alarme.html");
@@ -520,19 +578,23 @@ void loop() {
     
     if(((timeClient.getFormattedTime()).substring(0,2)).toInt() < 1){
       if(((timeClient.getFormattedTime()).substring(3,6)).toInt() < 30){
-        if(wakeHour){
-          dataSmartEcl[0] = WakeTime;
-        }else{
-          dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
-        }
+        dataSmartEcl[0] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunrise")+utcOffsetInSeconds);
         dataSmartEcl[1] = (requete("5258129e3a2c4e8144a8c755cfb8e97d","La rochelle","sunset")+utcOffsetInSeconds);
       }
     }
     dataSmartEcl[2] = (timeClient.getEpochTime());
     if(mode=="Active" or mode=="Process"){
-      displayColors(dataSmartEcl,3);
+      displayColors(dataSmartEcl,3,3600,"SmartLight");
     }
     previousLoopMillis = millis();
+  }
+
+  if(wakeHour){
+    unsigned long currentAlarmeMillis = millis();
+    if(currentAlarmeMillis - previousAlarme >= refreshAlarme){
+      Alarme();
+      previousAlarme = millis();
+    }
   }
   /*--------------------------------------------------------------------------------
   Les watchdogs!

@@ -81,6 +81,7 @@ body{
   display: inline-block;
   width: 60px;
   height: 34px;
+  margin-bottom: 10px;
 }
 
 .onOff input {display:none;}
@@ -121,4 +122,31 @@ input:checked + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
+}
+.home
+{
+  color:white;
+  text-decoration: none;
+  background: #24913d;
+  font-family: 'Nunito', sans-serif;
+  padding: 10px;
+  border-radius:10px 10px;
+}
+
+#bodyAlarme{
+  margin-top: 100px;
+}
+p{
+  font-family: 'Nunito', sans-serif;
+  color:white;
+  margin-bottom: 5px;
+
+}
+#heure{
+  font-weight: 700;
+  font-size: 36px;
+  margin-bottom: 40px;
+}
+p .libDigits{
+  color:black;
 }

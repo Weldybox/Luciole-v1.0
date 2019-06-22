@@ -8,22 +8,24 @@
     <link href="style/alarme.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
     <!-- [CURRENT TIME] -->
+    <div id='bodyAlarme'>
     <div id="ctime">
       <div class="square">
-        <p>Heures</p>
+        <p class="libDigits">Heures</p>
         <div class="digits" id="chr">00</div>
         <div class="text">HR</div>
       </div>
       <div class="square">
-        <p>Minutes</p>
+        <p class="libDigits">Minutes</p>
         <div class="digits" id="cmin">00</div>
         <div class="text">MIN</div>
       </div>
       <div class="square">
-        <p>Secondes</p>
+        <p class="libDigits">Secondes</p>
         <div class="digits" id="csec">00</div>
         <div class="text">SEC</div>
       </div>
@@ -42,13 +44,16 @@
         <input type="button" value="Reset" id="treset" disabled/>
       </div>
     </div>
+  </div>
     <div class="container">
       <label class="onOff">
         <input id="wakeOn" type="checkbox" name="wakeUP">
     <div class="slider"></div>
     </label>
     </div>
-    <a href="/">Home</a>
+    <p>Dernière heure séléctionnée :</p>
+    <p id="heure"></p>
+    <a href="/" class="home"><i class="fa fa-arrow-left"></i>   HOME</a>
   </body>
   <script src="js/alarme.js"></script>
 </html>

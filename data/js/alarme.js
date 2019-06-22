@@ -18,6 +18,7 @@ function init(){
     document.getElementById("wakeOn").checked = false;
   }
 
+  document.getElementById("heure").innerHTML = getCookie("heure");
 }
 
 /*---------------------------------------------------------
@@ -49,8 +50,6 @@ var ac = {
 
 
     // ac.init() : start the alarm clock
-    
-    
 
       ac.connection = connection;
       // Get the current time - hour, min, seconds
@@ -118,7 +117,8 @@ var ac = {
       if (ac.alarm != null) {
         now = hr + min + sec;
         if (now == ac.alarm) {
-
+          //document.getElementById("wakeOn").checked = false;
+          //connection.send("AF");
           alert("bip, bip, bip");
           
         }
@@ -127,9 +127,11 @@ var ac = {
   
     set : function () {
     // ac.set() : set the alarm
-  
+
       ac.alarm = ac.thr.value + ac.thm.value + ac.ths.value;
       ac.connection.send("A" + ac.thr.value + ac.thm.value);
+      document.getElementById("heure").innerHTML = ac.thr.value + ":" + ac.thm.value;
+      document.cookie = "heure="+ac.thr.value + ":" + ac.thm.value;
       ac.thr.disabled = true;
       ac.thm.disabled = true;
       ac.ths.disabled = true;
@@ -140,7 +142,6 @@ var ac = {
     reset : function () {
     // ac.reset() : reset the alarm
   
-
       ac.alarm = null;
       ac.thr.disabled = false;
       ac.thm.disabled = false;
@@ -171,6 +172,6 @@ var ac = {
       }
     });
   });
-  init()
   
+  init();
   /*Fonction d'initialisation*/
