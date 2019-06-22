@@ -305,7 +305,6 @@ bool checkSpace(uint8_t count, uint8_t longueur, String go){
       return 0;
     }
   }else{
-    Serial.println("test");
     go2 += count;
     if(go2 >= longueur){
       return 1;
@@ -329,6 +328,7 @@ void suprSelect(String nom, String nomFichier, uint8_t nombre, uint8_t Nsuppr){
 
   for(uint8_t i=0;i<nombre;i++){ //On répète la boucle 5 fois pour chaque couleur
     String part = file.readStringUntil(';'); //On lie la ligne jusqu'au changement de couleur
+    Serial.println(part);
     if(longueur > Nsuppr){ //On ne prend pas en compte la première
       save[longueur] = part; //On ajoute au tableau save la couleur
       index[i] = longueur; //On ajoute au tableau index l'index de la couleur
@@ -368,38 +368,40 @@ void addData(uint16_t couleur, uint8_t * couleurSave, String nomFichier, uint8_t
     if(couleur == 'R'){
         char buffred[16];
         sprintf(buffred,"%d,",save);
-        //Serial.println(buffred);
+        Serial.println(buffred);
         f.print(buffred);
-        (nomFichier == "/saveA.csv")? AlarmeRed = save: 0;
-        Serial.println(AlarmeRed);
+        if(nomFichier == "/saveA.csv"){ AlarmeRed = save;}
 
     }else if(couleur == 'G'){
         char buffgreen[16];
         sprintf(buffgreen,"%d,",save);
-        Serial.println(buffgreen);
-        (nomFichier == "/saveA.csv")? AlarmeGreen = save: 0;
         f.print(buffgreen);
+        Serial.println(buffgreen);
+        if(nomFichier == "/saveA.csv"){AlarmeGreen = save;}
+        
         
     }else if(couleur == 'B'){
         char buffblue[16];
         sprintf(buffblue,"%d;",save);
         Serial.println(buffblue);
         f.print(buffblue);
-        (nomFichier == "/saveA.csv")? AlarmeBlue = save: 0;
+        if(nomFichier == "/saveA.csv"){ AlarmeBlue = save;}
 
         //On regarde si le nombre de couleur sauvegardé n'exède pas 5
        //Serial.println(index);
-        if(nomFichier != "/saveA.csv" && index == 3 && checkSpace(1,2,"go2")){
-          //Serial.println("true");
-          Serial.println("Suppression save1");
-          suprSelect("n1","/saveS.csv",5,12);
-          //Si c'est le cas on libère de l'espace dans la mémoire
+       if(nomFichier != "/saveA.csv"){
+          if(index == 3 && checkSpace(1,2,"go2")){
+            //Serial.println("true");
+            Serial.println("Suppression save1");
+            suprSelect("n1","/saveS.csv",5,12);
+            //Si c'est le cas on libère de l'espace dans la mémoire
 
-        }else if(index == 2 && checkSpace(1,5,"go1")){
-          Serial.println("Suppression save");
-          suprSelect("n0","/save.csv",5,1);
+          }else if(index == 2 && checkSpace(1,5,"go1")){
+            Serial.println("Suppression save");
+            suprSelect("n0","/save.csv",5,1);
 
-        }
+          }
+       }
     }
     f.close();
   }
@@ -484,7 +486,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     }
     if(payload[0] =='s'){
       if(payload[1] == 'T'){
-        addData(payload[2],payload,"/ saveS.csv",3);
+        addData(payload[2],payload,"/saveS.csv",3);
       }else if(payload[1] == 'A'){
         Serial.println("ok");
         

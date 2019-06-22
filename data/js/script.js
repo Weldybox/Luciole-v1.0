@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var couleurs = ["sTR","sTG","sTB"];
 
       for(var i=0;i<3;i++){
-        console.log(couleurs[i] + ((((((document.getElementById("sous-menu2").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
+        //console.log(couleurs[i] + ((((((document.getElementById("sous-menu2").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
 
         connection.send(couleurs[i] + ((((((document.getElementById("sous-menu1").style.background).split("("))[1]).split(")"))[0]).split(","))[i]);
 
