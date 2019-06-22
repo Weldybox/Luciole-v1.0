@@ -11,10 +11,9 @@ La **version 1.0** inclut les fonctionnalités suivantes:
 - [x] Une option de sauvegarde de couleur
 - [x] Un mode *'SmartBlue light'*
 - [x] La possibilité de paramètrer le mode *'SmartBlue light'
+- [x] Un mode *'Sun wake'*
 
 ------
-
-- [ ] Un mode *'Sun wake'*
 - [ ] Plusieurs animation de couleurs
 
 ## Portail captif de connexion
