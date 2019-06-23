@@ -129,10 +129,15 @@ void Alarme(){
     analogWrite(BLUEPIN, 0);
 
   }else if(timeClient.getEpochTime() >= WakeTime){
-    wakeHour = false;
+    WakeTime += 86400;
+    refreshAlarme = 3600000;
+    Serial.println("à dans une heure");
+
   }else if(timeClient.getEpochTime() > (WakeTime - 300)){
     int time = timeClient.getEpochTime();
     if(refreshAlarme != 1000){
+      Serial.println(time);
+      Serial.println(WakeTime);
       refreshAlarme = 1000;
       Serial.println("refresh toute les secondes");
       fromhigh = WakeTime - time;
@@ -464,6 +469,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         WakeTime = mktime(&info);
 
         Serial.println(mktime(&info));
+
+        Alarme();
       }
     }
     if(payload[0] == 'R'){

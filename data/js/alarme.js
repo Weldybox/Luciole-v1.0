@@ -1,5 +1,10 @@
 
 var connection = new WebSocket('ws://' + location.hostname + ':81/');
+connection.onmessage = function(event){
+  if(event.data == "off"){
+    console.log("off");
+  }
+};
 connection.onerror = function (error) {
   console.log('WebSocket Error ', error);
 };
@@ -118,8 +123,7 @@ var ac = {
         now = hr + min + sec;
         if (now == ac.alarm) {
           //document.getElementById("wakeOn").checked = false;
-          //connection.send("AF");
-          alert("bip, bip, bip");
+          alert("bip bip");
           
         }
       }

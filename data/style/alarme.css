@@ -16,7 +16,9 @@ body{
   margin: 0 auto;
   max-width: 350px;
   padding: 10px;
-  background: #dddddd;
+  background: #f2f2f2;
+  border-top-right-radius:10px;
+  border-top-left-radius:10px;
   text-align: center;
 }
 #ctime .header {
@@ -29,12 +31,12 @@ body{
 }
 #ctime .digits {
   font-size: 32px;
-  background: #dddddd;
+  background: #f2f2f2;
   color: #000;
   border-radius: 5px;
 }
 #ctime .text {
-  color: #ddd;
+  color: rgb(32, 32, 32);
 }
 
 /* [TIME PICKER] */
@@ -42,6 +44,9 @@ body{
   margin: 0 auto;
   max-width: 350px;
   padding: 10px;
+  padding-bottom: 20px;
+  border-bottom-left-radius:10px;
+  border-bottom-right-radius:10px;
   background: #f2f2f2;
   white-space: nowrap;
 }
@@ -125,9 +130,9 @@ input:checked + .slider:before {
 }
 .home
 {
-  color:white;
+  color:rgb(19, 19, 19);
   text-decoration: none;
-  background: #24913d;
+  background: #ffffff;
   font-family: 'Nunito', sans-serif;
   padding: 10px;
   border-radius:10px 10px;
@@ -147,6 +152,6 @@ p{
   font-size: 36px;
   margin-bottom: 40px;
 }
-p .libDigits{
+.libDigits{
   color:black;
 }

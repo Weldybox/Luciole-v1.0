@@ -402,6 +402,10 @@ a {
   flex: row;
 }
 
+.containerAlarme button:hover{
+  background-color: #858585
+}
+
 #sous-menu3{
   width: 60px;
   height: 40px;
@@ -410,17 +414,19 @@ a {
 }
 .alarme{
   padding: 10px;
-  background-color: #24913d;
+  background-color: #ffffff;
+  color: rgb(19, 19, 19);
   font-family: 'Nunito', sans-serif;
   border-radius:10px 10px;
 }
 
 #sauvAlarmeC{
   width: 60px;
-  height: 40px;
+  height: 46px;
   margin-right:40px;
   border:none;
-  border-radius:10px 10px;
-  color:white;
-  background-color:rgb(32, 129, 57);
+  border-top-right-radius:10px;
+  border-bottom-right-radius:10px;
+  color:black;
+  background-color:white;
 }
