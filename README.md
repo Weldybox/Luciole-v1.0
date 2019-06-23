@@ -198,4 +198,71 @@ Pour éviter les conflits, le mode smart light n'est pas compatible avec le mode
 
 <p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/gestionCompatibilitéSmartLight.gif" alt="image roue couleur" width="650"></img></p>
 
+ ## Option alarme
  
+ Avec cette option il est possible de se réveiller en lumière
+ 
+L'utilisateur peut sélectionner la couleur d'allumage des LEDs. Cette couleur est stockée dans un fichiers .csv à l'intérieur de la mémoire SPIFFS de l'ESP.
+
+La seconde page permet de régler l'heure à laquelle il souhaite que les LEds s'allument. Sur la partie supérieure, l'heure actuelle. Sur la partie centrale, l'alarme a réglé. Enfin sur la partie inférieure, le switch qui permet d'activer ou non la fonctionnalité.
+ 
+L'ESP va ensuite transformer l'heure sélectionnée par l'utilisateur en timestamp (traitable plus facilement par le code arduino).
+ 
+Le code arduino va vérifier tous les X secondes si l'on approche de l'heure sélectionner par l'utilisateur.
+> Arduino
+```c
+  if(wakeHour){
+    unsigned long currentAlarmeMillis = millis();
+    if(currentAlarmeMillis - previousAlarme >= refreshAlarme){
+      Alarme();
+      previousAlarme = millis();
+    }
+}
+```
+Le temps de rafraichissement est par la même occasion défini selon l'écart entre l'heure alarme et le timestamp actuel.
+
+> Arduino
+```c
+void Alarme(){
+  if((timeClient.getEpochTime() < (WakeTime - 300)) && refreshAlarme != 60000){
+    refreshAlarme = 60000;
+    Serial.println(timeClient.getEpochTime());
+    Serial.println("<");
+    Serial.println(WakeTime);
+    Serial.println(refreshAlarme);
+    analogWrite(REDPIN, 0);
+    analogWrite(GREENPIN, 0);
+    analogWrite(BLUEPIN, 0);
+
+  }else if(timeClient.getEpochTime() >= WakeTime){
+    WakeTime += 86400;
+    refreshAlarme = 3600000;
+    Serial.println("à dans une heure");
+
+  }else if(timeClient.getEpochTime() > (WakeTime - 300)){
+    int time = timeClient.getEpochTime();
+    if(refreshAlarme != 1000){
+      Serial.println(time);
+      Serial.println(WakeTime);
+      refreshAlarme = 1000;
+      Serial.println("refresh toute les secondes");
+      fromhigh = WakeTime - time;
+    }
+    
+    int red = map((WakeTime - time), fromhigh, 0, 0, AlarmeRed);
+    int green = map((WakeTime - time), fromhigh, 0, 0, AlarmeGreen);
+    int blue = map((WakeTime - time), fromhigh, 0, 0, AlarmeBlue);
+
+    Serial.println(red);
+    Serial.println(green);
+    Serial.println(blue);
+
+    analogWrite(REDPIN, red);
+    analogWrite(GREENPIN, green);
+    analogWrite(BLUEPIN, blue);
+
+  }
+}
+```
+Si l'on se trouve à moins de 5 minutes de l'heure sélectionnée alors les LEDs s'allumeront petit à petit vers la couleur sélectionnée grâce aux mapping!
+
