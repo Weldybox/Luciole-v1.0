@@ -20,7 +20,7 @@ function init(){
   if(getCookie("onOFf") == "on"){
     document.getElementById("onOFf").checked = true;
     on = true;
-  }else{
+  }else if(getCookie("onOFf") == "off"){
     document.getElementById("onOFf").checked = false;
     on = false;
   }
@@ -28,7 +28,7 @@ function init(){
   if(getCookie("smartlight") == "off"){
     document.getElementById("smartLightSwitch").checked = false;
 
-  }else{
+  }else if(getCookie("smartlight") == "on"){
     document.getElementById("smartLightSwitch").checked = true;
     document.getElementById("onOFf").checked = false;
     on = false;
@@ -288,10 +288,10 @@ document.addEventListener('DOMContentLoaded', function () {
   //Fonction qui detecte lorsque l'on affiche les couleurs sauvegardées.
   checkbox.addEventListener('change', function () {
     if (checkbox.checked) {
-      document.cookie = "onOFf=on";
+      document.cookie = "onOFf=on; expires=Thu, 18 Dec 2020 12:00:00 UTC";
       on = true;
     } else {
-      document.cookie = "onOFf=off";
+      document.cookie = "onOFf=off; expires=Thu, 18 Dec 2020 12:00:00 UTC";
       sendOff();
       on = false;
     }
@@ -303,10 +303,10 @@ document.addEventListener('DOMContentLoaded', function () {
   SmartLight.addEventListener('change', function () {
     
     if (SmartLight.checked) {
-      document.cookie = "smartlight=on";
+      document.cookie = "smartlight=on; expires=Thu, 18 Dec 2020 12:00:00 UTC";
       checkSLCheckProcess();
     } else {
-      document.cookie = "smartlight=off"; 
+      document.cookie = "smartlight=off; expires=Thu, 18 Dec 2020 12:00:00 UTC"; 
       checkSLUncheckProcess();
     }
   });
@@ -336,7 +336,7 @@ var colorPicker = new iro.ColorPicker(".colorPicker", {
     var longueur =  ((color.rgbString).split(',')[2]).length;
     blue = (((color.rgbString).split(',')[2]).substring(0,longueur-1));
 
-    document.cookie = "cursor="+"rgb("+red+","+green+","+blue+")";
+    document.cookie = "cursor="+"rgb("+red+","+green+","+blue+"); expires=Thu, 18 Dec 2020 12:00:00 UTC";
 
     if(rangeDefine && pickColor){
       var backgroundcolor = "rgb("+red+","+green+","+blue+")";

@@ -350,7 +350,7 @@ a {
   transition-duration: 180ms;
    -webkit-transition-duration: 180ms;
    -webkit-transform: translate3d(0px, -75px, 0);
-   transform: translate3d(60px, -50px, 0);
+   transform: translate3d(100px, -50px, 0);
    box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.14);
    height: 45px;
    width:45px;
@@ -360,7 +360,7 @@ a {
    transition-duration: 180ms;
    -webkit-transition-duration: 180ms;
    -webkit-transform: translate3d(60px, 50px, 0);
-   transform: translate3d(60px, 50px, 0);
+   transform: translate3d(100px, 50px, 0);
    box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.14);
    
    height: 45px;
@@ -402,8 +402,8 @@ a {
   flex: row;
 }
 
-.containerAlarme button:hover{
-  background-color: #858585
+#sauvAlarmeC:hover{
+  background-color: #cfcfcf
 }
 
 #sous-menu3{

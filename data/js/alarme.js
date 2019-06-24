@@ -169,10 +169,10 @@ var ac = {
     wakeup.addEventListener('change', function () {
       if(wakeup.checked){
         connection.send("AO");
-        document.cookie = "wakeOn=on";
+        document.cookie = "wakeOn=on; expires=Thu, 18 Dec 2020 12:00:00 UTC";
       }else{
         connection.send("AF");
-        document.cookie = "wakeOn=off";
+        document.cookie = "wakeOn=off; expires=Thu, 18 Dec 2020 12:00:00 UTC";
       }
     });
   });
