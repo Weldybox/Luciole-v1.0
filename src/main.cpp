@@ -54,7 +54,7 @@ unsigned long previousAlarme = 0;
 bool wakeHour = false;
 int WakeTime;
 int refreshAlarme;
-int fromhigh;
+int ecartFromHigh;
 
 uint8_t AlarmeRed = 0;
 uint8_t AlarmeGreen = 0;
@@ -116,41 +116,56 @@ String split(String data, char separator, int index)
   return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-
+/*--------------------------------------------------------------------------------
+La fonction alarme détermine la vitesse de rafraichissement ainsi que l'évolution
+de couleur
+--------------------------------------------------------------------------------*/
 void Alarme(){
+
+  //Temps unix actuel est à plus de 5 minutes du temps unix de l'alarme
   if((timeClient.getEpochTime() < (WakeTime - 300)) && refreshAlarme != 60000){
-    refreshAlarme = 60000;
+    refreshAlarme = 60000; //Définition le taux de lunette de rafraichissement à 1 minute
+
     Serial.println(timeClient.getEpochTime());
     Serial.println("<");
     Serial.println(WakeTime);
     Serial.println(refreshAlarme);
+
+    //Eteint ensuite les LEDs
     analogWrite(REDPIN, 0);
     analogWrite(GREENPIN, 0);
     analogWrite(BLUEPIN, 0);
 
+  //Temps unix actuel à dépasser le temps unix de l'alarme
   }else if(timeClient.getEpochTime() >= WakeTime){
-    WakeTime += 86400;
-    refreshAlarme = 3600000;
-    Serial.println("à dans une heure");
+    WakeTime += 86400; //On redéfinit automatiquement le temps unix de l'alarme au jour suivant.
+    refreshAlarme = 3600000; //On rafraichit seulement 1 heure plus tard
 
+    Serial.println("à dans une heure");
+  //Temps unix actuel est à moins de 5 minutes du temps unix de l'alarme
   }else if(timeClient.getEpochTime() > (WakeTime - 300)){
     int time = timeClient.getEpochTime();
+
+    //Première itération de changement
     if(refreshAlarme != 1000){
       Serial.println(time);
       Serial.println(WakeTime);
-      refreshAlarme = 1000;
       Serial.println("refresh toute les secondes");
-      fromhigh = WakeTime - time;
+
+      refreshAlarme = 1000; //Définition du taux de rafraichissement toutes les secondes
+      ecartFromHigh = WakeTime - time; //Définition l'écart maximal
     }
     
-    int red = map((WakeTime - time), fromhigh, 0, 0, AlarmeRed);
-    int green = map((WakeTime - time), fromhigh, 0, 0, AlarmeGreen);
-    int blue = map((WakeTime - time), fromhigh, 0, 0, AlarmeBlue);
+    //Les couleurs rouge vert et bleues sont définies grâce à un mapping de l'écart et l'écart à la première itération comparé aux couleurs rgb comparées RGB
+    int red = map((WakeTime - time), ecartFromHigh, 0, 0, AlarmeRed);
+    int green = map((WakeTime - time), ecartFromHigh, 0, 0, AlarmeGreen);
+    int blue = map((WakeTime - time), ecartFromHigh, 0, 0, AlarmeBlue);
 
     Serial.println(red);
     Serial.println(green);
     Serial.println(blue);
 
+    //Allume les LEDs selon les couleurs mappées.
     analogWrite(REDPIN, red);
     analogWrite(GREENPIN, green);
     analogWrite(BLUEPIN, blue);
@@ -159,7 +174,7 @@ void Alarme(){
 }
 
 /*--------------------------------------------------------------------------------
-Fonction qui retourne si l'on est plus proche du levé ou coucher de soleuil.
+Fonction qui retourne si l'on est plus proche du levé ou coucher de soleil.
 --------------------------------------------------------------------------------*/
 String sunPosition(int dataSmartEcl[], uint8_t longueur){
   
@@ -598,6 +613,10 @@ void loop() {
     previousLoopMillis = millis();
   }
 
+
+  /*--------------------------------------------------------------------------------
+  Test itératif Alarme si celle-ci a été activée.
+  --------------------------------------------------------------------------------*/
   if(wakeHour){
     unsigned long currentAlarmeMillis = millis();
     if(currentAlarmeMillis - previousAlarme >= refreshAlarme){
