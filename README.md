@@ -204,8 +204,10 @@ Pour éviter les conflits, le mode smart light n'est pas compatible avec le mode
  
 L'utilisateur peut sélectionner la couleur d'allumage des LEDs. Cette couleur est stockée dans un fichiers .csv à l'intérieur de la mémoire SPIFFS de l'ESP.
 
+<p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/selectWakeColors.gif" alt="image roue couleur" width="650"></img></p>
+
 La seconde page permet de régler l'heure à laquelle il souhaite que les LEds s'allument. Sur la partie supérieure, l'heure actuelle. Sur la partie centrale, l'alarme a réglé. Enfin sur la partie inférieure, le switch qui permet d'activer ou non la fonctionnalité.
- 
+<p align="center"><img src="https://github.com/Weldybox/Luciole-v1.0/blob/master/images/DefAlarmeHeure.png" alt="image roue couleur" width="650"></img></p>
 L'ESP va ensuite transformer l'heure sélectionnée par l'utilisateur en timestamp (traitable plus facilement par le code arduino).
  
 Le code arduino va vérifier tous les X secondes si l'on approche de l'heure sélectionner par l'utilisateur.
