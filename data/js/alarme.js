@@ -122,7 +122,6 @@ var ac = {
       if (ac.alarm != null) {
         now = hr + min + sec;
         if (now == ac.alarm) {
-          //document.getElementById("wakeOn").checked = false;
           alert("bip bip");
           
         }
