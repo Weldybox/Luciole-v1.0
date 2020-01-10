@@ -4,6 +4,13 @@
 
 Luciole est un contrôleur de LED RGB.
 
+Ci-dessous vous trouverez les commandes à utiliser pour chargé le code dans la carte et dans sa mémoire SPIFFS:
+```c
+platformio run -t upload //upload du code arduino dans la carte
+platformio run -t upload //upload des fichiers dans la mémoire SPIFFS
+
+```
+
 La **version 1.0** inclut les fonctionnalités suivantes:
 - [x] Portail captif de connexion
 - [x] switch ON/OFF
