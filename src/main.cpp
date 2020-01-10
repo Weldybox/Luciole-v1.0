@@ -28,9 +28,9 @@ Variables qui peremttent de manipuler des constantes de temps
 /*--------------------------------------------------------------------------------
 Variable qui stock les numéros de broche de chaque MOSFET.
 --------------------------------------------------------------------------------*/
-#define REDPIN 13
-#define GREENPIN 12
-#define BLUEPIN 14
+#define REDPIN 12
+#define GREENPIN 14
+#define BLUEPIN 13
 
 int dataSmartEcl[3]; //Tableau qui va contenir les 3 temps unix nécessaire au traitement.
 String couleurComp[2] = {"255,72,0","255,255,255"};
